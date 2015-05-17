@@ -3,6 +3,10 @@ require "spec_helper"
 describe Lita::Handlers::Snoo, lita_handler: true do
 
   it { is_expected.to route("http://i.imgur.com/Eh3HkJ9.jpg").to(:url_search) }
+  it { is_expected.to route("http://imgur.com/Eh3HkJ9").to(:url_search) }
+  it { is_expected.to route("http://imgur.com/gallery/jS4pO").to(:url_search) }
+  it { is_expected.to route("http://imgur.com/a/pAJJi").to(:url_search) }
+  # TODO: comma-separated imgur IDs?
   it { is_expected.to route_command("reddit http://accent.gmu.edu/").to(:url_search) }
   it { is_expected.to route_command("snoo http://accent.gmu.edu/").to(:url_search) }
 
@@ -35,6 +39,18 @@ describe Lita::Handlers::Snoo, lita_handler: true do
         send_message "http://i.imgur.com/t15BFZh.jpg"
         expect(replies.count).to eq 0
         expect(replies.first).to start_with("[NSFW] ")
+      end
+
+      it "sends only one response when called directly with an imgur link" do
+        send_message "reddit http://i.imgur.com/Eh3HkJ9.jpg"
+        expect(replies.count).to eq 1
+        expect(replies.first).to match(/^Looking down San Francisco's California Street towards the Bay Bridge\. - zauzau on \/r\/pics, 2014-10-17 \(\d{1,3},\d{3}\ points, \d{1,3}% upvoted\) http:\/\/redd\.it\/2jl5np$/)
+      end
+
+      it "strips anything following # from image URLs" do
+        send_message "http://i.imgur.com/Eh3HkJ9.jpg#.png"
+        expect(replies.count).to eq 1
+        expect(replies.first).to match(/^Looking down San Francisco's California Street towards the Bay Bridge\. - zauzau on \/r\/pics, 2014-10-17 \(\d{1,3},\d{3}\ points, \d{1,3}% upvoted\) http:\/\/redd\.it\/2jl5np$/)
       end
 
     end
