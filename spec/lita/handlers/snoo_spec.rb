@@ -35,6 +35,11 @@ describe Lita::Handlers::Snoo, lita_handler: true do
         expect(replies.count).to eq 0
       end
 
+      it "does not return anything for a detected non-imgur link" do
+        send_message "https://github.com/"
+        expect(replies.count).to eq 0
+      end
+
       it "marks NSFW posts" do
         send_message "http://i.imgur.com/t15BFZh.jpg"
         expect(replies.count).to eq 0
