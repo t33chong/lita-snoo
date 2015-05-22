@@ -5,21 +5,28 @@ module Lita
     class Snoo < Handler
       config :domains, type: Array, default: ["imgur.com"]
 
-      route(/(#{URI.regexp})/, :url_search, command: false)
-      route(/^(?:reddit|snoo)\s+(#{URI.regexp})/i, :url_search, command: true,
+      route(/(#{URI.regexp})/, :ambient_url, command: false)
+      route(/^(?:reddit|snoo)\s+(#{URI.regexp})/i, :url, command: true,
             help: {t("help.snoo_url_key") => t("help.snoo_url_value")})
       route(/^\/?r\/(\S+)\s*(.*)/i, :subreddit, command: true,
             help: {t("help.snoo_sub_key") => t("snoo_sub_value")})
 
-      def url_search(response)
+      def ambient_url(response)
         domains = /#{config.domains.map {|d| Regexp.escape(d)}.join("|")}/
         url = response.matches.first.first.split("#").first
-        # Lita::Message#command?
-        if response.message.command?
-          response.reply api_search(url, true)
-        elsif domains =~ url
-          post = api_search(url)
+        if domains =~ url
+          post = api_search("url:'#{url}'")
           response.reply post if post
+        end
+      end
+
+      def url(response)
+        url = response.matches.first.first.split("#").first
+        post = api_search("url:'#{url}'")
+        if post
+          response.reply post
+        else
+          response.reply "No reddit posts found for #{url}"
         end
       end
 
@@ -27,22 +34,24 @@ module Lita
       end
 
       private
-      def api_search(url, command=false)
+      def api_search(query)
         http_response = http.get(
           "https://www.reddit.com/search.json",
-          q: "url:'#{url}'",
+          q: query,
           sort: "top",
           t: "all"
         )
         posts = MultiJson.load(http_response.body)["data"]["children"]
-        if posts.empty?
-          if command
-            return "No reddit posts found for #{url}"
-          else
-            return nil
-          end
-        end
+        return nil if posts.empty?
         format_post(posts.first)
+      end
+
+      private
+      def api_subreddit()
+      end
+
+      private
+      def api_subreddit_search()
       end
 
       private
