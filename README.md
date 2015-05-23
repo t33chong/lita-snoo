@@ -33,7 +33,7 @@ Lita will automatically detect links from imgur (or any domains you've defined i
 <lita> Looking down San Francisco's California Street towards the Bay Bridge. - zauzau on /r/pics, 2014-10-18 (4,927 points) http://redd.it/2jl5np
 ```
 
-You can also ask her to retrieve a reddit post for a given URL directly.
+You can also ask her to retrieve a reddit post for a given URL directly using the command `reddit` or `snoo`.
 ```
 <me>   lita: reddit https://www.flickr.com/photos/walkingsf/4671581511
 <lita> Where photos in San Francisco are taken by tourists (red) vs locals (blue) - hfutrell on /r/sanfrancisco, 2015-05-14 (267 points) http://redd.it/35yr3b
