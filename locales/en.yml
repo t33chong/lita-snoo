@@ -6,4 +6,4 @@ en:
           snoo_url_key: "reddit URL"
           snoo_url_value: "Retrieve the original reddit post for URL."
           snoo_sub_key: "/r/SUBREDDIT [N|QUERY]"
-          snoo_sub_value: "Return the top (or Nth) post in SUBREDDIT / Search for QUERY within SUBREDDIT."
+          snoo_sub_value: "Return the top (or Nth) post in SUBREDDIT | Search for QUERY within SUBREDDIT."
