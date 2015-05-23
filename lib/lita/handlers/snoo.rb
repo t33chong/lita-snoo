@@ -23,11 +23,7 @@ module Lita
       def url(response)
         url = response.matches.first.first.split("#").first
         post = api_search("url:'#{url}'")
-        if post
-          response.reply post
-        else
-          response.reply "No reddit posts found for #{url}"
-        end
+        response.reply post ? post : "No reddit posts found for #{url}"
       end
 
       def subreddit(response)
