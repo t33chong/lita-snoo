@@ -9,7 +9,7 @@ module Lita
       route(/^(?:reddit|snoo)\s+(#{URI.regexp})/i, :url, command: true,
             help: {t("help.snoo_url_key") => t("help.snoo_url_value")})
       route(/^\/?r\/(\S+)\s*(.*)/i, :subreddit, command: true,
-            help: {t("help.snoo_sub_key") => t("snoo_sub_value")})
+            help: {t("help.snoo_sub_key") => t("help.snoo_sub_value")})
 
       def ambient_url(response)
         domains = /#{config.domains.map {|d| Regexp.escape(d)}.join("|")}/
