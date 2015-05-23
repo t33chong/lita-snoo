@@ -45,6 +45,12 @@ describe Lita::Handlers::Snoo, lita_handler: true do
         expect(replies.first).to match(/^Looking down San Francisco's California Street towards the Bay Bridge\. - zauzau on \/r\/pics, 2014-10-17 \(\d{1,3},\d{3}\ points\) http:\/\/redd\.it\/2jl5np$/)
       end
 
+      it "unescapes strings that have been HTML-escaped" do
+        send_message "http://i.imgur.com/HdIgRSq.jpg"
+        expect(replies.count).to eq 1
+        expect(replies.first).not_to match(/&amp;/)
+      end
+
     end
 
     context "with custom domains defined in the config" do
@@ -91,6 +97,13 @@ describe Lita::Handlers::Snoo, lita_handler: true do
       send_command "snoo http://imgur.com/noa9Jcb"
       expect(replies.count).to eq 1
       expect(replies.first).to match(/^No reddit posts found for http:\/\/imgur\.com\/noa9Jcb$/)
+    end
+
+    it "only returns one post when a given link is in the list of domains" do
+      registry.config.handlers.snoo.domains = ["flickr.com"]
+      send_command "snoo https://www.flickr.com/photos/walkingsf/4671581511"
+      expect(replies.count).to eq 1
+      expect(replies.first).to match(/^Where photos in San Francisco are taken by tourists \(red\) vs locals \(blue\) - hfutrell on \/r\/sanfrancisco, 2015-05-14 \(\d{3} points\) http:\/\/redd\.it\/35yr3b$/)
     end
 
   end
