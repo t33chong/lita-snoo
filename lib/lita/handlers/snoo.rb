@@ -31,6 +31,22 @@ module Lita
       end
 
       def subreddit(response)
+        subreddit = response.matches.first.first
+        arg = response.matches.first[1]
+        if arg.length > 0
+          if /^\d+$/ =~ arg
+            n = arg.to_i
+            if n.between?(1, 25)
+              response.reply api_subreddit(subreddit, n)
+            else
+              response.reply "Please specify a number between 1 and 25"
+            end
+          else
+            response.reply api_subreddit_search(subreddit, arg)
+          end
+        else
+          response.reply api_subreddit(subreddit, rand(1..25))
+        end
       end
 
       private
@@ -41,17 +57,37 @@ module Lita
           sort: "top",
           t: "all"
         )
+        return nil if http_response.status != 200
         posts = MultiJson.load(http_response.body)["data"]["children"]
         return nil if posts.empty?
         format_post(posts.first)
       end
 
       private
-      def api_subreddit()
+      def api_subreddit(subreddit, n)
+        http_response = http.get("https://www.reddit.com/r/#{subreddit}.json")
+        return "/r/#{subreddit} is a private subreddit" if http_response.status == 403
+        return "/r/#{subreddit} is an invalid subreddit" if http_response.status != 200
+        posts = MultiJson.load(http_response.body)["data"]["children"]
+        return "No posts found under /r/#{subreddit}" if posts.empty?
+        return "/r/#{subreddit} doesn't have that many posts" if posts.length < n
+        format_post(posts[n-1])
       end
 
       private
-      def api_subreddit_search()
+      def api_subreddit_search(subreddit, query)
+        http_response = http.get(
+          "https://www.reddit.com/r/#{subreddit}/search.json",
+          q: query,
+          restrict_sr: true,
+          sort: "relevance",
+          t: "all"
+        )
+        return "/r/#{subreddit} is a private subreddit" if http_response.status == 403
+        return "/r/#{subreddit} is an invalid subreddit" if http_response.status != 200
+        posts = MultiJson.load(http_response.body)["data"]["children"]
+        return "No posts found for '#{query}' in /r/#{subreddit}" if posts.empty?
+        format_post(posts.first)
       end
 
       private
