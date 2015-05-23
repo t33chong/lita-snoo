@@ -97,12 +97,9 @@ module Lita
         subreddit = post["data"]["subreddit"]
         date = Time.at(post["data"]["created"]).to_datetime.strftime("%F")
         score = post["data"]["score"].to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse
-        ups = post["data"]["ups"].to_f
-        downs = post["data"]["downs"].to_f
-        percent = "%.f" % (ups / (ups + downs) * 100)
         id = post["data"]["id"]
         nsfw = post["data"]["over_18"] ? "[NSFW] " : ""
-        "#{nsfw}#{title} - #{author} on /r/#{subreddit}, #{date} (#{score} points, #{percent}% upvoted) http://redd.it/#{id}"
+        "#{nsfw}#{title} - #{author} on /r/#{subreddit}, #{date} (#{score} points) http://redd.it/#{id}"
       end
 
     end
