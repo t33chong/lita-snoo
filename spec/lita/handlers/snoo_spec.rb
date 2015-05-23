@@ -11,6 +11,7 @@ describe Lita::Handlers::Snoo, lita_handler: true do
 
   it { is_expected.to route_command("/r/AskReddit").to(:subreddit) }
   it { is_expected.to route_command("R/AskReddit 1").to(:subreddit) }
+  it { is_expected.to route_command("/r/linguistics lambda calculus").to(:subreddit) }
 
   describe "#ambient_url" do
 
@@ -95,21 +96,9 @@ describe Lita::Handlers::Snoo, lita_handler: true do
   end
 
   describe "#subreddit" do
-    # TODO: Allow for query string search within subreddit
-    # e.g. "/r/askreddit best joke"
-    # #subreddit will have to call one of 2 API methods
-    # nth post uses /r/subreddit.json
-    # search uses /r/subreddit/search.json
-    # which API method is called depends on whether or not captured regex contains only digits
 
     it "returns a random post from the top 25 for a given subreddit" do
       send_command "/r/askreddit"
-      expect(replies.count).to eq 1
-      expect(replies.first).to match(/^.+ - \w+ on \/r\/AskReddit, \d{4}-\d{2}-\d{2} \((?:\d|,)+ points, \d{1,3}% upvoted\) http:\/\/redd\.it\/\w+$/)
-    end
-
-    it "returns the top post for a given subreddit when top is specified" do
-      send_command "r/askreddit top"
       expect(replies.count).to eq 1
       expect(replies.first).to match(/^.+ - \w+ on \/r\/AskReddit, \d{4}-\d{2}-\d{2} \((?:\d|,)+ points, \d{1,3}% upvoted\) http:\/\/redd\.it\/\w+$/)
     end
@@ -118,6 +107,24 @@ describe Lita::Handlers::Snoo, lita_handler: true do
       send_command "/r/AskReddit 2"
       expect(replies.count).to eq 1
       expect(replies.first).to match(/^.+ - \w+ on \/r\/AskReddit, \d{4}-\d{2}-\d{2} \((?:\d|,)+ points, \d{1,3}% upvoted\) http:\/\/redd\.it\/\w+$/)
+    end
+
+    it "returns the most relevant result for a given subreddit-specific search query" do
+      send_command "/r/linguistics lambda calculus"
+      expect(replies.count).to eq 1
+      expect(replies.first).to match(/^Intro to lambda calculus \(for linguists!\) - leftoversalad on \/r\/linguistics, 2015-02-16 \(\d+ points, \d{1,3}% upvoted\) http:\/\/redd\.it\/2w4ir4$/)
+    end
+
+    it "returns an appropriate message when no results can be found for a given subreddit-specific search query" do
+      send_command "/r/linguistics ChuqKmv8oRQdHqp7"
+      expect(replies.count).to eq 1
+      expect(replies.first).to match(/^No posts found for 'ChuqKmv8oRQdHqp7' in \/r\/linguistics$/)
+    end
+
+    it "returns an appropriate message when the subreddit in a given subreddit-specific search query does not exist" do
+      send_command "/r/ChuqKmv8oRQdHqp7 linguistics"
+      expect(replies.count).to eq 1
+      expect(replies.first).to match(/^\/r\/ChuqKmv8oRQdHqp7 is an invalid subreddit$/)
     end
 
     it "marks NSFW posts" do
@@ -129,7 +136,7 @@ describe Lita::Handlers::Snoo, lita_handler: true do
     it "returns an appropriate message when the given subreddit does not exist" do
       send_command "/r/ChuqKmv8oRQdHqp7"
       expect(replies.count).to eq 1
-      expect(replies.first).to match(/^No posts found under \/r\/ChuqKmv8oRQdHqp7$/)
+      expect(replies.first).to match(/^\/r\/ChuqKmv8oRQdHqp7 is an invalid subreddit$/)
     end
 
     it "returns an appropriate message when the given subreddit is empty" do
@@ -145,9 +152,9 @@ describe Lita::Handlers::Snoo, lita_handler: true do
     end
 
     it "returns an appropriate message when the given subreddit has fewer than n posts" do
-      send_command "/r/thingsjonsnowknows 5"
+      send_command "/r/Onepostsubreddits 25"
       expect(replies.count).to eq 1
-      expect(replies.first).to match(/^\/r\/thingsjonsnowknows doesn't have that many posts$/)
+      expect(replies.first).to match(/^\/r\/Onepostsubreddits doesn't have that many posts$/)
     end
 
     it "returns an appropriate message when n is not between 1 and 25" do
