@@ -20,7 +20,7 @@ describe Lita::Handlers::Snoo, lita_handler: true do
       it "returns the top reddit post for a detected imgur link" do
         send_message "i hella miss the city yadadamean http://i.imgur.com/Eh3HkJ9.jpg"
         expect(replies.count).to eq 1
-        expect(replies.first).to match(/^Looking down San Francisco's California Street towards the Bay Bridge\. - zauzau on \/r\/pics, 2014-10-17 \(\d{1,3},\d{3}\ points, \d{1,3}% upvoted\) http:\/\/redd\.it\/2jl5np$/)
+        expect(replies.first).to match(/^Looking down San Francisco's California Street towards the Bay Bridge\. - zauzau on \/r\/pics, 2014-10-17 \(\d{1,3},\d{3}\ points\) http:\/\/redd\.it\/2jl5np$/)
       end
 
       it "does not return anything for a detected imgur link if it has not been submitted to reddit" do
@@ -42,7 +42,7 @@ describe Lita::Handlers::Snoo, lita_handler: true do
       it "strips anything following # from URLs" do
         send_message "http://i.imgur.com/Eh3HkJ9.jpg#.png"
         expect(replies.count).to eq 1
-        expect(replies.first).to match(/^Looking down San Francisco's California Street towards the Bay Bridge\. - zauzau on \/r\/pics, 2014-10-17 \(\d{1,3},\d{3}\ points, \d{1,3}% upvoted\) http:\/\/redd\.it\/2jl5np$/)
+        expect(replies.first).to match(/^Looking down San Francisco's California Street towards the Bay Bridge\. - zauzau on \/r\/pics, 2014-10-17 \(\d{1,3},\d{3}\ points\) http:\/\/redd\.it\/2jl5np$/)
       end
 
     end
@@ -56,13 +56,13 @@ describe Lita::Handlers::Snoo, lita_handler: true do
       it "returns the top reddit post for a detected link on a custom domain" do
         send_message "https://www.flickr.com/photos/walkingsf/4671581511 not surprised about union square, trying to maneuver through all the tourists with their phones out gives me a bad case of irritable powell syndrome"
         expect(replies.count).to eq 1
-        expect(replies.first).to match(/^Where photos in San Francisco are taken by tourists \(red\) vs locals \(blue\) - hfutrell on \/r\/sanfrancisco, 2015-05-14 \(\d{3} points, \d{1,3}% upvoted\) http:\/\/redd\.it\/35yr3b$/)
+        expect(replies.first).to match(/^Where photos in San Francisco are taken by tourists \(red\) vs locals \(blue\) - hfutrell on \/r\/sanfrancisco, 2015-05-14 \(\d{3} points\) http:\/\/redd\.it\/35yr3b$/)
       end
 
       it "returns the top reddit post for a detected link on a different custom domain" do
         send_message "http://accent.gmu.edu/"
         expect(replies.count).to eq 1
-        expect(replies.first).to match(/^Ever wonder what an Armenian accend sounds like\? How about a Swahili Accent\? This site has them all\. - topemo on \/r\/reddit\.com, 2006-04-03 \(\d{2} points, \d{1,3}% upvoted\) http:\/\/redd\.it\/3udn$/)
+        expect(replies.first).to match(/^Ever wonder what an Armenian accend sounds like\? How about a Swahili Accent\? This site has them all\. - topemo on \/r\/reddit\.com, 2006-04-03 \(\d{2} points\) http:\/\/redd\.it\/3udn$/)
       end
 
       it "does not return anything for a detected link on a custom domain if it has not been submitted to reddit" do
@@ -84,7 +84,7 @@ describe Lita::Handlers::Snoo, lita_handler: true do
     it "returns the top reddit post for a given link" do
       send_command "reddit http://i.imgur.com/Eh3HkJ9.jpg"
       expect(replies.count).to eq 1
-      expect(replies.first).to match(/^Looking down San Francisco's California Street towards the Bay Bridge\. - zauzau on \/r\/pics, 2014-10-17 \(\d{1,3},\d{3}\ points, \d{1,3}% upvoted\) http:\/\/redd\.it\/2jl5np$/)
+      expect(replies.first).to match(/^Looking down San Francisco's California Street towards the Bay Bridge\. - zauzau on \/r\/pics, 2014-10-17 \(\d{1,3},\d{3}\ points\) http:\/\/redd\.it\/2jl5np$/)
     end
 
     it "returns an appropriate message for a given link if it has not been submitted to reddit" do
@@ -100,19 +100,19 @@ describe Lita::Handlers::Snoo, lita_handler: true do
     it "returns a random post from the top 25 for a given subreddit" do
       send_command "/r/askreddit"
       expect(replies.count).to eq 1
-      expect(replies.first).to match(/^.+ - \w+ on \/r\/AskReddit, \d{4}-\d{2}-\d{2} \((?:\d|,)+ points, \d{1,3}% upvoted\) http:\/\/redd\.it\/\w+$/)
+      expect(replies.first).to match(/^.+ - \w+ on \/r\/AskReddit, \d{4}-\d{2}-\d{2} \((?:\d|,)+ points\) http:\/\/redd\.it\/\w+$/)
     end
 
     it "returns the nth post for a given subreddit when n is specified" do
       send_command "/r/AskReddit 2"
       expect(replies.count).to eq 1
-      expect(replies.first).to match(/^.+ - \w+ on \/r\/AskReddit, \d{4}-\d{2}-\d{2} \((?:\d|,)+ points, \d{1,3}% upvoted\) http:\/\/redd\.it\/\w+$/)
+      expect(replies.first).to match(/^.+ - \w+ on \/r\/AskReddit, \d{4}-\d{2}-\d{2} \((?:\d|,)+ points\) http:\/\/redd\.it\/\w+$/)
     end
 
     it "returns the most relevant result for a given subreddit-specific search query" do
       send_command "/r/linguistics lambda calculus"
       expect(replies.count).to eq 1
-      expect(replies.first).to match(/^Intro to lambda calculus \(for linguists!\) - leftoversalad on \/r\/linguistics, 2015-02-16 \(\d+ points, \d{1,3}% upvoted\) http:\/\/redd\.it\/2w4ir4$/)
+      expect(replies.first).to match(/^Intro to lambda calculus \(for linguists!\) - leftoversalad on \/r\/linguistics, 2015-02-16 \(\d+ points\) http:\/\/redd\.it\/2w4ir4$/)
     end
 
     it "returns an appropriate message when no results can be found for a given subreddit-specific search query" do
@@ -130,7 +130,7 @@ describe Lita::Handlers::Snoo, lita_handler: true do
     it "marks NSFW posts" do
       send_command "/r/spacedicks"
       expect(replies.count).to eq 1
-      expect(replies.first).to match(/^\[NSFW\] .+ - \w+ on \/r\/spacedicks, \d{4}-\d{2}-\d{2} \((?:\d|,)+ points, \d{1,3}% upvoted\) http:\/\/redd\.it\/\w+$/)
+      expect(replies.first).to match(/^\[NSFW\] .+ - \w+ on \/r\/spacedicks, \d{4}-\d{2}-\d{2} \((?:\d|,)+ points\) http:\/\/redd\.it\/\w+$/)
     end
 
     it "returns an appropriate message when the given subreddit does not exist" do
