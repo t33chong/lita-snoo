@@ -1,4 +1,5 @@
-require 'uri'
+require "cgi"
+require "uri"
 
 module Lita
   module Handlers
@@ -11,19 +12,27 @@ module Lita
       route(/^\/?r\/(\S+)\s*(.*)/i, :subreddit, command: true,
             help: {t("help.snoo_sub_key") => t("help.snoo_sub_value")})
 
+      def initialize(robot)
+        super
+        @domains = /#{config.domains.map {|d| Regexp.escape(d)}.join("|")}/
+      end
+
       def ambient_url(response)
-        domains = /#{config.domains.map {|d| Regexp.escape(d)}.join("|")}/
         url = response.matches.first.first.split("#").first
-        if domains =~ url
+        if @domains =~ url
           post = api_search("url:'#{url}'")
+          #response.reply "ambient_url"  # debug
           response.reply post if post
         end
       end
 
       def url(response)
         url = response.matches.first.first.split("#").first
-        post = api_search("url:'#{url}'")
-        response.reply post ? post : "No reddit posts found for #{url}"
+        if @domains !~ url
+          post = api_search("url:'#{url}'")
+          #response.reply "url"  # debug
+          response.reply post ? post : "No reddit posts found for #{url}"
+        end
       end
 
       def subreddit(response)
@@ -88,7 +97,7 @@ module Lita
 
       private
       def format_post(post)
-        title = post["data"]["title"]
+        title = CGI.unescapeHTML(post["data"]["title"])
         author = post["data"]["author"]
         subreddit = post["data"]["subreddit"]
         date = Time.at(post["data"]["created"]).to_datetime.strftime("%F")
