@@ -2,20 +2,20 @@ require "spec_helper"
 
 describe Lita::Handlers::Snoo, lita_handler: true do
 
+  it { is_expected.to route("http://i.imgur.com/Eh3HkJ9.jpg").to(:ambient_url) }
+  it { is_expected.to route("http://imgur.com/Eh3HkJ9").to(:ambient_url) }
+  it { is_expected.to route("http://imgur.com/gallery/jS4pO").to(:ambient_url) }
+  it { is_expected.to route("http://imgur.com/a/pAJJi").to(:ambient_url) }
+  it { is_expected.to route("https://www.flickr.com/photos/walkingsf/4671581511").to(:ambient_url) }
+
+  it { is_expected.to route_command("reddit http://accent.gmu.edu/").to(:url) }
+  it { is_expected.to route_command("SNOO http://accent.gmu.edu/").to(:url) }
+
+  it { is_expected.to route_command("/r/AskReddit").to(:subreddit) }
+  it { is_expected.to route_command("R/AskReddit 1").to(:subreddit) }
+  it { is_expected.to route_command("/r/linguistics lambda calculus").to(:subreddit) }
+
   context "with the default config" do
-
-    it { is_expected.to route("http://i.imgur.com/Eh3HkJ9.jpg").to(:ambient_url) }
-    it { is_expected.to route("http://imgur.com/Eh3HkJ9").to(:ambient_url) }
-    it { is_expected.to route("http://imgur.com/gallery/jS4pO").to(:ambient_url) }
-    it { is_expected.to route("http://imgur.com/a/pAJJi").to(:ambient_url) }
-    it { is_expected.to route("https://www.flickr.com/photos/walkingsf/4671581511").to(:ambient_url) }
-
-    it { is_expected.to route_command("reddit http://accent.gmu.edu/").to(:url) }
-    it { is_expected.to route_command("SNOO http://accent.gmu.edu/").to(:url) }
-
-    it { is_expected.to route_command("/r/AskReddit").to(:subreddit) }
-    it { is_expected.to route_command("R/AskReddit 1").to(:subreddit) }
-    it { is_expected.to route_command("/r/linguistics lambda calculus").to(:subreddit) }
 
     describe "#ambient_url" do
 
