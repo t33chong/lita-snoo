@@ -12,25 +12,22 @@ module Lita
       route(/^\/?r\/(\S+)\s*(.*)/i, :subreddit, command: true,
             help: {t("help.snoo_sub_key") => t("help.snoo_sub_value")})
 
-      def initialize(robot)
-        super
-        @domains = /#{config.domains.map {|d| Regexp.escape(d)}.join("|")}/
-      end
-
       def ambient_url(response)
         url = response.matches.first.first.split("#").first
-        if @domains =~ url
+        if config.domains.any? { |d| URI.parse(url).hostname.include? d }
           post = api_search("url:'#{url}'")
-          #response.reply "ambient_url"  # debug
-          response.reply post if post
+          if response.message.command?
+            response.reply post ? post : "No reddit posts found for #{url}"
+          else
+            response.reply post if post
+          end
         end
       end
 
       def url(response)
         url = response.matches.first.first.split("#").first
-        if @domains !~ url
+        unless config.domains.any? { |d| URI.parse(url).hostname.include? d }
           post = api_search("url:'#{url}'")
-          #response.reply "url"  # debug
           response.reply post ? post : "No reddit posts found for #{url}"
         end
       end
