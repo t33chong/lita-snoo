@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = "lita-snoo"
-  spec.version       = "0.1.1"
+  spec.version       = "0.1.2"
   spec.authors       = ["Tristan Chong"]
   spec.email         = ["ong@tristaneuan.ch"]
   spec.description   = "A Lita handler for reddit that can detect imgur (or custom) URLs and find their original posts"
