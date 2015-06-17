@@ -14,7 +14,9 @@ module Lita
 
       def ambient_url(response)
         url = response.matches.first.first.split("#").first
-        if config.domains.any? { |d| URI.parse(url).hostname.include? d }
+        hostname = URI.parse(url).hostname
+        return if hostname.nil?
+        if config.domains.any? { |d| hostname.include? d }
           post = api_search("url:'#{url}'")
           if response.message.command?
             response.reply post ? post : "No reddit posts found for #{url}"
