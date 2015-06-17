@@ -59,6 +59,10 @@ describe Lita::Handlers::Snoo, lita_handler: true do
         expect(replies.first).not_to match(/&amp;/)
       end
 
+      it "does not raise an error for a false positive URL" do
+        expect { send_command "translate(zh-cn:en) 您好" }.not_to raise_error
+      end
+
     end
 
     describe "#url" do
